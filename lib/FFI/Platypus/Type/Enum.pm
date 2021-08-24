@@ -335,7 +335,8 @@ sub ffi_custom_type_api_1
         foreach my $name ($name,@aliases)
         {
           my $full = join '::', $package, $prefix . ( $config{casing} eq 'upper' ? uc($name) : $name );
-          constant->import($full, $index);
+          no strict 'refs';
+          ref $index eq 'CODE' ? *{$full} = $index : constant->import($full, $index);
         }
       }
     }

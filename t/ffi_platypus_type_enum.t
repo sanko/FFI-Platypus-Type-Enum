@@ -238,4 +238,21 @@ subtest 'dualvar' => sub {
 
 };
 
+subtest 'code' => sub {
+
+  my $ffi = FFI::Platypus->new( api => 1 );
+
+  $ffi->load_custom_type('::Enum', 'enum1', { package => 'Foo4', casing => 'keep' },
+    'zero',
+    'one',
+    'two',
+	'three',
+    ['five' => sub () { Foo4::two() + Foo4::three() } ]
+  );
+
+  is($ffi->cast('enum', 'enum1', 2), 'two');
+  todo '::Enum cannot back cast lazy values' => sub {is($ffi->cast('enum', 'enum1', 5), 'five')};
+  is(Foo4::five(), 5);
+};
+
 done_testing;
